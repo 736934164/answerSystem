@@ -27,13 +27,51 @@ export interface QuizSession {
 
 export const categories: Category[] = [
   {
-    id: 'safety',
-    name: '安全生产知识',
-    description: '安全生产月知识竞赛参考题库',
-    questionCount: 100,
+    id: 'safety-management',
+    name: '安全管理',
+    description: '安全生产管理相关知识',
+    questionCount: 73,
     icon: 'shield'
+  },
+  {
+    id: 'laws',
+    name: '法律法规',
+    description: '安全生产法律法规知识',
+    questionCount: 78,
+    icon: 'book'
+  },
+  {
+    id: 'civil-engineering',
+    name: '土建综合安全技术',
+    description: '土建工程安全技术知识',
+    questionCount: 100,
+    icon: 'building'
+  },
+  {
+    id: 'mechanical',
+    name: '机械设备安全技术',
+    description: '机械设备安全操作知识',
+    questionCount: 100,
+    icon: 'cog'
+  },
+  {
+    id: 'all',
+    name: '综合题库',
+    description: '包含所有类型题目',
+    questionCount: 351,
+    icon: 'layers'
   }
 ]
+
+// 按分类获取题目ID列表
+export function getQuestionIdsByCategory(categoryId: string): number[] {
+  if (categoryId === 'all') {
+    return questions.map(q => q.id)
+  }
+  // 目前所有题目都属于安全管理分类
+  // 后续可以根据题目来源扩展
+  return questions.map(q => q.id)
+}
 
 export const questions: Question[] = [
   {

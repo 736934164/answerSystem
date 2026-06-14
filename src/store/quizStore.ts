@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { questions, Question, QuizSession } from '@/data/questions'
+import { questions, Question, QuizSession, getQuestionIdsByCategory } from '@/data/questions'
 
 interface QuizStore {
   currentSession: QuizSession | null
@@ -21,8 +21,14 @@ export const useQuizStore = create<QuizStore>((set, get) => ({
   setQuestionCount: (count) => set({ questionCount: count }),
 
   startQuiz: (categoryId) => {
-    const shuffled = [...questions].sort(() => Math.random() - 0.5)
-    const selectedQuestions = shuffled.slice(0, get().questionCount)
+    // 获取该分类的题目ID列表
+    const categoryQuestionIds = getQuestionIdsByCategory(categoryId)
+    // 从分类题目中随机抽取
+    const shuffledIds = [...categoryQuestionIds].sort(() => Math.random() - 0.5)
+    const selectedIds = shuffledIds.slice(0, get().questionCount)
+
+    // 获取对应的题目
+    const selectedQuestions = selectedIds.map(id => questions.find(q => q.id === id)!).filter(Boolean)
 
     const session: QuizSession = {
       id: Date.now().toString(),

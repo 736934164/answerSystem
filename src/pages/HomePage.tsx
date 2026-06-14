@@ -1,14 +1,25 @@
-import { Shield, BookOpen, History, ChevronRight } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Shield, BookOpen, History, ChevronRight, Building2, Cog, Layers, BookText } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 import { categories } from '@/data/questions'
 import { useQuizStore } from '@/store/quizStore'
 
 export default function HomePage() {
+  const navigate = useNavigate()
   const { questionCount, setQuestionCount, startQuiz, getHistory } = useQuizStore()
   const history = getHistory()
 
-  const handleStartQuiz = () => {
-    startQuiz('safety')
+  const handleStartQuiz = (categoryId: string) => {
+    startQuiz(categoryId)
+    navigate(`/quiz/${categoryId}`)
+  }
+
+  // 分类图标映射
+  const iconMap = {
+    shield: Shield,
+    book: BookText,
+    building: Building2,
+    cog: Cog,
+    layers: Layers
   }
 
   return (
@@ -50,38 +61,41 @@ export default function HomePage() {
 
       {/* 题库分类 */}
       <div className="px-6 mt-6">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">题库分类</h2>
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">选择题库类型</h2>
         <div className="space-y-4">
-          {categories.map(category => (
-            <div
-              key={category.id}
-              className="bg-white rounded-2xl shadow-md overflow-hidden"
-            >
-              <div className="p-5">
-                <div className="flex items-start gap-4">
-                  <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <BookOpen className="w-7 h-7 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-800">{category.name}</h3>
-                    <p className="text-sm text-gray-500 mt-1">{category.description}</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
-                        {category.questionCount} 道题目
-                      </span>
+          {categories.map(category => {
+            const IconComponent = iconMap[category.icon as keyof typeof iconMap] || BookOpen
+            return (
+              <div
+                key={category.id}
+                className="bg-white rounded-2xl shadow-md overflow-hidden"
+              >
+                <div className="p-5">
+                  <div className="flex items-start gap-4">
+                    <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <IconComponent className="w-7 h-7 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-gray-800">{category.name}</h3>
+                      <p className="text-sm text-gray-500 mt-1">{category.description}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
+                          {category.questionCount} 道题目
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
+                <button
+                  onClick={() => handleStartQuiz(category.id)}
+                  className="w-full py-4 bg-gradient-to-r from-primary to-primary/90 text-white font-medium flex items-center justify-center gap-2 active:opacity-90 transition-opacity"
+                >
+                  开始答题
+                  <ChevronRight className="w-5 h-5" />
+                </button>
               </div>
-              <button
-                onClick={handleStartQuiz}
-                className="w-full py-4 bg-gradient-to-r from-primary to-primary/90 text-white font-medium flex items-center justify-center gap-2 active:opacity-90 transition-opacity"
-              >
-                开始答题
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
 

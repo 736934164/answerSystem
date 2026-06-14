@@ -84,7 +84,7 @@ export default function ResultPage() {
             {grade.text}
           </div>
           <p className="text-white/80 text-sm">
-            正确率 {percentage}% · 用时 {Math.round((Date.now() - (history.state?.startTime || Date.now())) / 1000)}秒
+            正确率 {percentage}%
           </p>
         </div>
       </header>
