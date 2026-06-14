@@ -42,7 +42,7 @@ export default function QuizPage() {
       setShowAnswer(true)
     } else {
       const newAnswer = currentAnswer.includes(key)
-        ? currentAnswer.filter(k => k !== key)
+        ? currentAnswer.filter((k: string) => k !== key)
         : [...currentAnswer, key]
       answerQuestion(currentQuestionId, newAnswer)
     }

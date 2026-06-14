@@ -42,7 +42,7 @@ export default function HomePage() {
         <div className="bg-white rounded-2xl shadow-md p-5">
           <label className="text-sm text-gray-500 mb-3 block">每次答题数量</label>
           <div className="flex gap-2">
-            {[10, 20, 30, 50].map(count => (
+            {([30, 50, 100, 'all'] as const).map(count => (
               <button
                 key={count}
                 onClick={() => setQuestionCount(count)}
@@ -52,7 +52,7 @@ export default function HomePage() {
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                {count}题
+                {count === 'all' ? '全部' : `${count}题`}
               </button>
             ))}
           </div>

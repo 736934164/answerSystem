@@ -3,8 +3,8 @@ import { questions, Question, QuizSession, getQuestionIdsByCategory } from '@/da
 
 interface QuizStore {
   currentSession: QuizSession | null
-  questionCount: number
-  setQuestionCount: (count: number) => void
+  questionCount: number | 'all'
+  setQuestionCount: (count: number | 'all') => void
   startQuiz: (categoryId: string) => void
   answerQuestion: (questionId: number, answer: string[]) => void
   finishQuiz: () => { score: number; total: number; results: { question: Question; userAnswer: string[]; isCorrect: boolean }[] }
@@ -16,7 +16,7 @@ const STORAGE_KEY = 'quiz_history'
 
 export const useQuizStore = create<QuizStore>((set, get) => ({
   currentSession: null,
-  questionCount: 10,
+  questionCount: 30,
 
   setQuestionCount: (count) => set({ questionCount: count }),
 
@@ -25,7 +25,8 @@ export const useQuizStore = create<QuizStore>((set, get) => ({
     const categoryQuestionIds = getQuestionIdsByCategory(categoryId)
     // 从分类题目中随机抽取
     const shuffledIds = [...categoryQuestionIds].sort(() => Math.random() - 0.5)
-    const selectedIds = shuffledIds.slice(0, get().questionCount)
+    const selectedCount = get().questionCount === 'all' ? categoryQuestionIds.length : get().questionCount as number
+    const selectedIds = shuffledIds.slice(0, selectedCount)
 
     // 获取对应的题目
     const selectedQuestions = selectedIds.map(id => questions.find(q => q.id === id)!).filter(Boolean)
@@ -60,14 +61,14 @@ export const useQuizStore = create<QuizStore>((set, get) => ({
     const { currentSession } = get()
     if (!currentSession) return { score: 0, total: 0, results: [] }
 
-    const results = currentSession.questions.map(qId => {
+    const results = currentSession.questions.map((qId: number) => {
       const question = questions.find(q => q.id === qId)!
       const userAnswer = currentSession.answers[qId] || []
       const isCorrect = JSON.stringify(userAnswer.sort()) === JSON.stringify(question.answer.sort())
       return { question, userAnswer, isCorrect }
     })
 
-    const score = results.filter(r => r.isCorrect).length
+    const score = results.filter((r: { isCorrect: boolean }) => r.isCorrect).length
     const total = results.length
 
     const finishedSession: QuizSession = {
